@@ -8,6 +8,7 @@ white cards, a like/comment action bar under every post, and a bottom navigation
 | Layer | Tech |
 | --- | --- |
 | Frontend | React 18 + Vite, **Material UI (MUI v5)**, React Router |
+| Design | Dark theme, hot-pink accent, floating pill navigation |
 | Backend | Node.js + Express (ESM) |
 | Database | MongoDB (Mongoose) — **exactly two collections: `users` and `posts`** |
 | Auth | JWT (7-day tokens) + bcrypt password hashing |
@@ -57,7 +58,12 @@ JPEG in a canvas on the client before upload, so they stay small enough to live 
 post document — which is what keeps the whole app inside two collections.
 
 **Public feed** — every post from every user, newest first, showing the author's name and
-avatar, a relative timestamp, the content, and live like/comment counts.
+avatar, a relative timestamp, the content, and live like/comment counts. A story-style avatar
+strip at the top surfaces whoever posted most recently, derived from the feed already in
+memory rather than a second request.
+
+**Liked tab** — everything the signed-in user has hearted, served by the same paginated
+endpoint with a `likedBy` filter that matches against the embedded likes array.
 
 **Likes and comments** — any signed-in user can like or comment on any post. The **username of
 every liker and commenter is stored** on the post (`likes[].username`, `comments[].username`)
@@ -166,7 +172,8 @@ Render (backend) and Vercel/Netlify (frontend).
 | `POST` | `/api/auth/signup` | — | Create an account, returns `{ token, user }` |
 | `POST` | `/api/auth/login` | — | Log in, returns `{ token, user }` |
 | `GET` | `/api/auth/me` | ✅ | Current user (restores a session) |
-| `GET` | `/api/posts` | optional | Feed. `?cursor=&limit=&author=` |
+| `GET` | `/api/posts` | optional | Feed. `?cursor=&limit=&author=&likedBy=` |
+| `GET` | `/api/posts/stats` | — | Post/like/comment totals. `?author=` |
 | `POST` | `/api/posts` | ✅ | Create a post (`text` and/or `image`) |
 | `DELETE` | `/api/posts/:id` | ✅ | Delete your own post |
 | `POST` | `/api/posts/:id/like` | ✅ | Toggle like, returns the new count |
