@@ -8,7 +8,7 @@ import { api } from '../api/client.js';
  * loading more never re-sends rows the client already has, even when new posts
  * land at the top of the feed while the user is scrolling.
  */
-export function usePosts({ author } = {}) {
+export function usePosts({ author, likedBy } = {}) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true); // first page
   const [loadingMore, setLoadingMore] = useState(false);
@@ -33,7 +33,7 @@ export function usePosts({ author } = {}) {
       setError('');
 
       try {
-        const data = await api.getFeed({ cursor: reset ? null : cursorRef.current, author });
+        const data = await api.getFeed({ cursor: reset ? null : cursorRef.current, author, likedBy });
         cursorRef.current = data.nextCursor;
         setHasMore(data.hasMore);
         setPosts((prev) => (reset ? data.posts : [...prev, ...data.posts]));
@@ -45,7 +45,7 @@ export function usePosts({ author } = {}) {
         setLoadingMore(false);
       }
     },
-    [author]
+    [author, likedBy]
   );
 
   useEffect(() => {

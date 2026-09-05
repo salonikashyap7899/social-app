@@ -140,6 +140,19 @@ const authorAll = await call(`/posts?author=${me.data.user.id}&limit=30`);
 check('author filter finds all 14 of alice posts', authorAll.data.posts.length === 14, String(authorAll.data.posts.length));
 check('invalid author id -> 400', (await call('/posts?author=abc')).status === 400);
 
+console.log('\n--- stats + likedBy ---');
+const statsAll = await call('/posts/stats');
+check('global stats returns totals', statsAll.status === 200 && statsAll.data.posts === 15, JSON.stringify(statsAll.data));
+
+const statsAlice = await call(`/posts/stats?author=${me.data.user.id}`);
+check('per-author stats counts only their posts', statsAlice.data.posts === 14, JSON.stringify(statsAlice.data));
+check('stats sums likes and comments', statsAlice.data.likes === 2 && statsAlice.data.comments === 5, JSON.stringify(statsAlice.data));
+check('stats rejects a bad author id -> 400', (await call('/posts/stats?author=nope')).status === 400);
+
+const likedByBob = await call(`/posts?likedBy=${bob.data.user.id}`);
+check('likedBy returns only posts that user liked', likedByBob.data.posts.length === 1 && likedByBob.data.posts[0]._id === pid, JSON.stringify(likedByBob.data.posts.map((p) => p._id)));
+check('likedBy rejects a bad id -> 400', (await call('/posts?likedBy=nope')).status === 400);
+
 console.log('\n--- delete ---');
 check('non-owner delete -> 403', (await call(`/posts/${pid}`, { method: 'DELETE', token: B })).status === 403);
 check('owner delete -> 200', (await call(`/posts/${pid}`, { method: 'DELETE', token: A })).status === 200);

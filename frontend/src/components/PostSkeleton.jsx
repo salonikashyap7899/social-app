@@ -15,7 +15,9 @@ export default function PostSkeleton() {
         <Skeleton sx={{ mt: 1.5 }} height={18} />
         <Skeleton width="80%" height={18} />
       </CardContent>
-      <Skeleton variant="rectangular" height={180} />
+      <Box sx={{ px: 1.5, pb: 1.5 }}>
+        <Skeleton variant="rounded" height={180} sx={{ borderRadius: 4 }} />
+      </Box>
     </Card>
   );
 }

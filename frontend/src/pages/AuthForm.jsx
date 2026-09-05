@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Box,
   Card,
-  CardContent,
   TextField,
   Button,
   Typography,
@@ -15,6 +14,7 @@ import {
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
 import { useAuth } from '../context/AuthContext.jsx';
+import { brand } from '../theme.js';
 
 /**
  * One component backs both /login and /signup — the only differences are the
@@ -64,87 +64,95 @@ export default function AuthForm({ mode }) {
   };
 
   return (
-    <Box sx={{ display: 'grid', placeItems: 'center', minHeight: '70vh' }}>
-      <Card sx={{ width: '100%', maxWidth: 420 }}>
-        <CardContent sx={{ p: 3 }}>
-          <Typography variant="h5" sx={{ fontWeight: 700 }}>
-            {isSignup ? 'Create your account' : 'Welcome back'}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, mb: 2.5 }}>
-            {isSignup ? 'Join the Pulse community in seconds.' : 'Log in to post, like and comment.'}
-          </Typography>
+    <Box sx={{ maxWidth: 440, mx: 'auto', pt: { xs: 2, sm: 5 } }}>
+      {/* Onboarding-style headline: one word picked out in the accent colour. */}
+      <Typography variant="h4" sx={{ mb: 1, lineHeight: 1.15 }}>
+        The{' '}
+        <Box component="span" sx={{ color: brand.pink }}>
+          Social
+        </Box>{' '}
+        Space
+        <br />
+        for Everyone
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+        {isSignup
+          ? 'Share your story and connect with the world.'
+          : 'Welcome back — pick up where you left off.'}
+      </Typography>
 
-          {error && (
-            <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
-              {error}
-            </Alert>
-          )}
+      <Card sx={{ p: 3 }}>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }} onClose={() => setError('')}>
+            {error}
+          </Alert>
+        )}
 
-          <Box component="form" onSubmit={handleSubmit} noValidate>
-            {isSignup && (
-              <TextField
-                fullWidth
-                label="Username"
-                value={form.username}
-                onChange={update('username')}
-                autoComplete="username"
-                sx={{ mb: 2 }}
-              />
-            )}
+        <Box component="form" onSubmit={handleSubmit} noValidate>
+          {isSignup && (
             <TextField
               fullWidth
-              label="Email"
-              type="email"
-              value={form.email}
-              onChange={update('email')}
-              autoComplete="email"
+              label="Username"
+              value={form.username}
+              onChange={update('username')}
+              autoComplete="username"
               sx={{ mb: 2 }}
             />
-            <TextField
-              fullWidth
-              label="Password"
-              type={showPassword ? 'text' : 'password'}
-              value={form.password}
-              onChange={update('password')}
-              autoComplete={isSignup ? 'new-password' : 'current-password'}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword((v) => !v)}
-                      edge="end"
-                      aria-label="toggle password visibility"
-                    >
-                      {showPassword ? <VisibilityOffRoundedIcon /> : <VisibilityRoundedIcon />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ mb: 2.5 }}
-            />
+          )}
+          <TextField
+            fullWidth
+            label="Email"
+            type="email"
+            value={form.email}
+            onChange={update('email')}
+            autoComplete="email"
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            fullWidth
+            label="Password"
+            type={showPassword ? 'text' : 'password'}
+            value={form.password}
+            onChange={update('password')}
+            autoComplete={isSignup ? 'new-password' : 'current-password'}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword((v) => !v)}
+                    edge="end"
+                    aria-label="toggle password visibility"
+                  >
+                    {showPassword ? <VisibilityOffRoundedIcon /> : <VisibilityRoundedIcon />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            sx={{ mb: 3 }}
+          />
 
-            <Button
-              type="submit"
-              fullWidth
-              size="large"
-              variant="contained"
-              disabled={busy}
-              startIcon={busy ? <CircularProgress size={18} color="inherit" /> : null}
-            >
-              {isSignup ? 'Sign up' : 'Log in'}
-            </Button>
-          </Box>
+          <Button
+            type="submit"
+            fullWidth
+            size="large"
+            variant="contained"
+            disabled={busy}
+            startIcon={busy ? <CircularProgress size={18} color="inherit" /> : null}
+            sx={{ py: 1.4 }}
+          >
+            {isSignup ? 'Create account' : 'Log in'}
+          </Button>
+        </Box>
 
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 2.5, textAlign: 'center' }}>
-            {isSignup ? 'Already have an account? ' : "Don't have an account? "}
-            <Link
-              to={isSignup ? '/login' : '/signup'}
-              style={{ color: '#6C4BF4', fontWeight: 600, textDecoration: 'none' }}
-            >
-              {isSignup ? 'Log in' : 'Sign up'}
-            </Link>
-          </Typography>
-        </CardContent>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 2.5, textAlign: 'center' }}>
+          {isSignup ? 'Already have an account? ' : "Don't have an account? "}
+          <Link
+            to={isSignup ? '/login' : '/signup'}
+            style={{ color: brand.pink, fontWeight: 700, textDecoration: 'none' }}
+          >
+            {isSignup ? 'Log in' : 'Sign up'}
+          </Link>
+        </Typography>
       </Card>
     </Box>
   );

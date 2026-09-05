@@ -66,13 +66,15 @@ export const api = {
   login: (payload) => request('/auth/login', { method: 'POST', body: payload, auth: false }),
   me: () => request('/auth/me'),
 
-  getFeed: ({ cursor, limit = 10, author } = {}) => {
+  getFeed: ({ cursor, limit = 10, author, likedBy } = {}) => {
     const qs = new URLSearchParams();
     if (cursor) qs.set('cursor', cursor);
     if (limit) qs.set('limit', String(limit));
     if (author) qs.set('author', author);
+    if (likedBy) qs.set('likedBy', likedBy);
     return request(`/posts?${qs.toString()}`);
   },
+  getStats: (author) => request(`/posts/stats${author ? `?author=${author}` : ''}`),
   createPost: (payload) => request('/posts', { method: 'POST', body: payload }),
   deletePost: (id) => request(`/posts/${id}`, { method: 'DELETE' }),
   toggleLike: (id) => request(`/posts/${id}/like`, { method: 'POST' }),

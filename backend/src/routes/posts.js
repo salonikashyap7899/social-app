@@ -47,6 +47,40 @@ function feedProjection(viewerId) {
 }
 
 /**
+ * GET /api/posts/stats?author=
+ * Totals for the profile header. Declared before the /:id routes so "stats" is
+ * never mistaken for an id. Summing server-side keeps it accurate no matter how
+ * many pages of the feed the client has actually loaded.
+ */
+router.get('/stats', async (req, res, next) => {
+  try {
+    const match = {};
+    if (req.query.author) {
+      if (!mongoose.isValidObjectId(req.query.author)) {
+        return res.status(400).json({ message: 'Invalid author id' });
+      }
+      match.author = new mongoose.Types.ObjectId(req.query.author);
+    }
+
+    const [totals] = await Post.aggregate([
+      { $match: match },
+      {
+        $group: {
+          _id: null,
+          posts: { $sum: 1 },
+          likes: { $sum: '$likesCount' },
+          comments: { $sum: '$commentsCount' },
+        },
+      },
+    ]);
+
+    res.json({ posts: totals?.posts ?? 0, likes: totals?.likes ?? 0, comments: totals?.comments ?? 0 });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
  * GET /api/posts?cursor=&limit=
  * Public, newest-first feed with cursor (keyset) pagination - no skip(), so page
  * 50 costs the same as page 1.
@@ -62,6 +96,13 @@ router.get('/', optionalAuth, async (req, res, next) => {
         return res.status(400).json({ message: 'Invalid author id' });
       }
       match.author = new mongoose.Types.ObjectId(req.query.author);
+    }
+    if (req.query.likedBy) {
+      if (!mongoose.isValidObjectId(req.query.likedBy)) {
+        return res.status(400).json({ message: 'Invalid likedBy id' });
+      }
+      // Matches against the embedded likes array - no join, no extra collection.
+      match['likes.user'] = new mongoose.Types.ObjectId(req.query.likedBy);
     }
     if (req.query.cursor) {
       const cursor = decodeCursor(req.query.cursor);

@@ -46,8 +46,22 @@ export default function PostList({ feed, emptyTitle, emptyBody }) {
 
   if (posts.length === 0) {
     return (
-      <Box sx={{ textAlign: 'center', py: 8, px: 3 }}>
-        <Typography sx={{ fontSize: 44, mb: 1 }}>🪶</Typography>
+      <Box sx={{ textAlign: 'center', py: 7, px: 3 }}>
+        <Box
+          sx={{
+            width: 72,
+            height: 72,
+            mx: 'auto',
+            mb: 2,
+            borderRadius: '50%',
+            display: 'grid',
+            placeItems: 'center',
+            fontSize: 32,
+            bgcolor: 'rgba(255,255,255,0.05)',
+          }}
+        >
+          🪶
+        </Box>
         <Typography variant="h6" gutterBottom>
           {emptyTitle}
         </Typography>

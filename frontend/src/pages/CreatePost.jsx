@@ -8,9 +8,6 @@ export default function CreatePost() {
 
   return (
     <Box>
-      <Typography variant="h6" sx={{ mb: 1.5, px: 0.5 }}>
-        New post
-      </Typography>
       {/* Back to the feed once it is published, where the new post is already on top. */}
       <Composer onCreated={() => navigate('/')} />
       <Typography variant="body2" color="text.secondary" sx={{ px: 0.5 }}>

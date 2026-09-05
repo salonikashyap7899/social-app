@@ -5,6 +5,7 @@ import Feed from './pages/Feed.jsx';
 import Profile from './pages/Profile.jsx';
 import CreatePost from './pages/CreatePost.jsx';
 import AuthForm from './pages/AuthForm.jsx';
+import Liked from './pages/Liked.jsx';
 
 export default function App() {
   return (
@@ -19,6 +20,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <CreatePost />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/liked"
+          element={
+            <ProtectedRoute>
+              <Liked />
             </ProtectedRoute>
           }
         />

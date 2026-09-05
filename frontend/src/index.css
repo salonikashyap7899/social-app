@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 html,
 body,
@@ -8,15 +8,27 @@ body,
 
 body {
   margin: 0;
+  background: #0b0b0f;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Slim scrollbar so the feed does not look boxed-in on desktop. */
+/* Horizontal strips (the story row) scroll without showing a bar. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
 }
+::-webkit-scrollbar-track {
+  background: transparent;
+}
 ::-webkit-scrollbar-thumb {
-  background: rgba(23, 26, 43, 0.18);
+  background: rgba(255, 255, 255, 0.16);
   border-radius: 8px;
   border: 3px solid transparent;
   background-clip: content-box;

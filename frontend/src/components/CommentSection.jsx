@@ -16,14 +16,14 @@ import UserAvatar from './UserAvatar.jsx';
 
 function CommentRow({ comment }) {
   return (
-    <Box sx={{ display: 'flex', gap: 1.25, mb: 1.25 }}>
+    <Box sx={{ display: 'flex', gap: 1.25, mb: 1.25, alignItems: 'flex-start' }}>
       <UserAvatar username={comment.username} src={comment.avatar} size={30} />
       <Box
         sx={{
-          bgcolor: 'background.default',
-          borderRadius: 2,
-          px: 1.5,
-          py: 1,
+          bgcolor: 'rgba(255,255,255,0.05)',
+          borderRadius: 3,
+          px: 1.75,
+          py: 1.1,
           flexGrow: 1,
           minWidth: 0,
         }}
@@ -137,7 +137,7 @@ export default function CommentSection({ postId, previewComments, totalCount, on
             placeholder="Write a comment…"
             value={text}
             onChange={(e) => setText(e.target.value.slice(0, 500))}
-            InputProps={{ sx: { borderRadius: 5, bgcolor: 'background.default' } }}
+            InputProps={{ sx: { borderRadius: 999 } }}
           />
           <IconButton type="submit" color="primary" disabled={!text.trim() || sending} aria-label="send comment">
             {sending ? <CircularProgress size={20} /> : <SendRoundedIcon />}
