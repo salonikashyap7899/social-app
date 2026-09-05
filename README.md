@@ -20,7 +20,7 @@ white cards, a like/comment action bar under every post, and a bottom navigation
 | --- | --- |
 | Frontend (Vercel/Netlify) | _fill in after deploying_ |
 | Backend (Render) | _fill in after deploying_ |
-| Repository | _fill in_ |
+| Repository | <https://github.com/salonikashyap7899/social-app> |
 
 ## Repository layout
 
