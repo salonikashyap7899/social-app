@@ -1,7 +1,29 @@
 // Single place that knows how to talk to the API: base URL, auth header,
 // and turning non-2xx responses into thrown Errors with the server's message.
 
-const BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+/**
+ * Normalises VITE_API_URL.
+ *
+ * Pasting into a hosting dashboard's env-var field is easy to get wrong, and the
+ * failure is baffling: a value like "https://api.example.comhttps://api.example.com"
+ * produces a hostname that does not resolve, which surfaces as a generic network
+ * error rather than "your config is wrong". So keep only the first origin, and
+ * drop any trailing slash (which would otherwise yield "//api/posts").
+ */
+function normaliseBase(raw) {
+  const trimmed = (raw || '').trim().replace(/\/+$/, '');
+  if (!trimmed) return ''; // empty = same-origin, which is what local dev uses
+
+  // Split before every "http://" / "https://" (tolerating a dropped colon) and
+  // keep the first, so a value pasted more than once still works.
+  const [first] = trimmed.split(/(?=https?:?\/\/)/);
+  if (first !== trimmed) {
+    console.warn(`VITE_API_URL looks duplicated; using "${first}". Fix it in your hosting dashboard.`);
+  }
+  return first.replace(/\/+$/, '');
+}
+
+const BASE = normaliseBase(import.meta.env.VITE_API_URL);
 
 const TOKEN_KEY = 'pulse_token';
 
