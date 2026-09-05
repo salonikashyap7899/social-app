@@ -4,7 +4,9 @@ import mongoose from 'mongoose';
 
 const mem = await MongoMemoryServer.create();
 process.env.JWT_SECRET = 'test-secret';
-process.env.CLIENT_ORIGINS = '*';
+// A realistic allowlist rather than '*', so the CORS tests below actually
+// exercise the accept/refuse logic.
+process.env.CLIENT_ORIGINS = 'https://my-app.example.com';
 
 const { connectDB } = await import('../src/db.js');
 const app = (await import('../src/app.js')).default;
@@ -142,6 +144,26 @@ console.log('\n--- delete ---');
 check('non-owner delete -> 403', (await call(`/posts/${pid}`, { method: 'DELETE', token: B })).status === 403);
 check('owner delete -> 200', (await call(`/posts/${pid}`, { method: 'DELETE', token: A })).status === 200);
 check('deleted post is gone -> 404', (await call(`/posts/${pid}/comments`)).status === 404);
+
+console.log('\n--- cors ---');
+// A refused origin must NOT come back as a 500. A 500 carries no CORS headers at
+// all, so the browser reports it as an unreachable server rather than a blocked
+// origin - which is exactly what broke the first deployment.
+const rawFetch = async (origin) => {
+  const res = await fetch(`${BASE}/posts?limit=1`, { headers: origin ? { Origin: origin } : {} });
+  return { status: res.status, acao: res.headers.get('access-control-allow-origin') };
+};
+
+const vercel = await rawFetch('https://social-app-jade-iota.vercel.app');
+check('vercel origin -> 200 with CORS header', vercel.status === 200 && !!vercel.acao, JSON.stringify(vercel));
+const netlify = await rawFetch('https://anything.netlify.app');
+check('netlify origin allowed', netlify.status === 200 && !!netlify.acao, JSON.stringify(netlify));
+const localhost = await rawFetch('http://localhost:5173');
+check('localhost origin allowed', localhost.status === 200 && !!localhost.acao, JSON.stringify(localhost));
+const unknown = await rawFetch('https://evil.example.com');
+check('unknown origin -> 200 without CORS header, never a 500', unknown.status === 200 && !unknown.acao, JSON.stringify(unknown));
+check('request with no Origin still works', (await rawFetch(null)).status === 200);
+check('GET / is a friendly 200, not a 404', (await fetch('http://localhost:5099/')).status === 200);
 
 console.log('\n--- collections ---');
 const names = (await mongoose.connection.db.listCollections().toArray()).map((c) => c.name).sort();
